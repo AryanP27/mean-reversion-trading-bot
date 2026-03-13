@@ -5,7 +5,7 @@ It will tell us when to buy and sell based on the Bollinger Bands indicator from
 
 """
 
-from trading_bot.indicators.bollinger import bollinger_bands
+from ..indicators.bollinger import bollinger_bands
 
 import pandas as pd
 

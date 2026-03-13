@@ -23,3 +23,4 @@ sma, lower_band, upper_band = bollinger_bands(prices)
 print("SMA:\n", sma.tail())
 print("Lower Band:\n", lower_band.tail())
 print("Upper Band:\n", upper_band.tail())
+
