@@ -20,10 +20,14 @@ class Decision:
     size: float = 0.0
     
 class MeanReversionStrategy:
-    def __init__(self):
+    def __init__(self, low_vol, high_vol, sizing_constant):
         self.position = None
         self.entry_price = None
+        self.low_vol = low_vol
+        self.high_vol = high_vol
+        self.sizing_constant = sizing_constant
 
+    # Gives Bollinger Band signal
     def bollinger_signal(self, price, sma, lower, upper):     
         if price < lower:
             return "BUY"
@@ -32,17 +36,18 @@ class MeanReversionStrategy:
         else:
             return "HOLD"
     
+    # Used for decision making. Will take in stuff and then pass it to bot.py.
     def decision(self, price, sma, lower_band, upper_band, volatility):
         signal = self.bollinger_signal(price, sma, lower_band, upper_band)
 
-        if volatility > 50:
+        if volatility > self.high_vol:
             return Decision(
                 action="Hold", 
                 reason="High volatility", 
                 timestamp=pd.Timestamp.now().timestamp(),
                 size=0.0
             )
-        if volatility < 5:
+        if volatility < self.low_vol:
             return Decision(
                 action="Hold", 
                 reason="Low volatility", 
@@ -50,7 +55,7 @@ class MeanReversionStrategy:
                 size=0.0
             )
         
-        size = 1.0 / max(volatility, 1e-6)
+        size = self.sizing_constant / max(volatility, 1e-6)
 
         if signal == "BUY" and self.position != "LONG":
             self.position = "LONG"
