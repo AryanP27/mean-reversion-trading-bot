@@ -1,5 +1,7 @@
 """
+
 This file contains the mean reversion strategy.
+
 It will tell us when to buy and sell based on the Bollinger Bands indicator from indicators/bollinger.py.
 
 
@@ -31,5 +33,46 @@ class MeanReversionStrategy:
             return "HOLD"
     
     def decision(self, price, sma, lower_band, upper_band, volatility):
+        signal = self.bollinger_signal(price, sma, lower_band, upper_band)
 
-        pass
+        if volatility > 50:
+            return Decision(
+                action="Hold", 
+                reason="High volatility", 
+                timestamp=pd.Timestamp.now().timestamp(),
+                size=0.0
+            )
+        if volatility < 5:
+            return Decision(
+                action="Hold", 
+                reason="Low volatility", 
+                timestamp=pd.Timestamp.now().timestamp(),
+                size=0.0
+            )
+        
+        size = 1.0 / max(volatility, 1e-6)
+
+        if signal == "BUY" and self.position != "LONG":
+            self.position = "LONG"
+            self.entry_price = price
+            return Decision(
+                action="BUY", 
+                reason="Price below lower Bollinger Band", 
+                timestamp=pd.Timestamp.now().timestamp(),
+                size=size
+            )
+        if signal == "SELL" and self.position != "SHORT":
+            self.position = "SHORT"
+            self.entry_price = price
+            return Decision(
+                action="SELL", 
+                reason="Price above upper Bollinger Band", 
+                timestamp=pd.Timestamp.now().timestamp(),
+                size=size
+            )
+        return Decision(
+            action="HOLD", 
+            reason="No trade signal", 
+            timestamp=pd.Timestamp.now().timestamp(),
+            size=0.0
+        )
