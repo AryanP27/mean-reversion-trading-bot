@@ -1,5 +1,5 @@
 # mean-reversion-trading-bot
-
+```
 ## Data Flow
 
 [MARKET / EXCHANGE]
@@ -33,3 +33,4 @@ logger.py   — trades, signals, errors → file/stdout
 
 test_indicators.py  — unit tests bollinger.py in isolation
 test_strategy.py    — unit tests mean_reversion.py in isolation
+```
