@@ -42,14 +42,14 @@ class MeanReversionStrategy:
 
         if volatility > self.high_vol:
             return Decision(
-                action="Hold", 
+                action="HOLD", 
                 reason="High volatility", 
                 timestamp=pd.Timestamp.now().timestamp(),
                 size=0.0
             )
         if volatility < self.low_vol:
             return Decision(
-                action="Hold", 
+                action="HOLD", 
                 reason="Low volatility", 
                 timestamp=pd.Timestamp.now().timestamp(),
                 size=0.0
