@@ -97,3 +97,41 @@ def test_position_updates_on_sell():
 
     assert strategy.position == "SHORT"
     assert decision.action == "SELL"
+
+def test_no_duplicate_buy_when_already_long():
+    strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
+
+    # First BUY
+    strategy.decision(price=90, sma=100, lower_band=95, upper_band=105, volatility=10)
+    assert strategy.position == "LONG"
+
+    # Second BUY attempt
+    decision = strategy.decision(price=80, sma=100, lower_band=95, upper_band=105, volatility=10)
+
+    assert decision.action == "HOLD"
+    assert decision.reason == "No trade signal"
+    assert strategy.position == "LONG"
+
+def test_no_duplicate_sell_when_already_short():
+    strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
+
+    # First SELL
+    strategy.decision(price=120, sma=100, lower_band=95, upper_band=105, volatility=10)
+    assert strategy.position == "SHORT"
+
+    # Second SELL attempt
+    decision = strategy.decision(price=130, sma=100, lower_band=95, upper_band=105, volatility=10)
+
+    assert decision.action == "HOLD"
+    assert decision.reason == "No trade signal"
+    assert strategy.position == "SHORT"
+
+def test_decision_object_structure():
+    strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
+
+    decision = strategy.decision(price=90, sma=100, lower_band=95, upper_band=105, volatility=10)
+
+    assert hasattr(decision, "action")
+    assert hasattr(decision, "reason")
+    assert hasattr(decision, "timestamp")
+    assert hasattr(decision, "size")

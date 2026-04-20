@@ -57,24 +57,44 @@ class MeanReversionStrategy:
         
         size = self.sizing_constant / max(volatility, 1e-6)
 
-        if signal == "BUY" and self.position != "SHORT":
-            self.position = "LONG"
-            self.entry_price = price
-            return Decision(
-                action="BUY", 
-                reason="Price below lower Bollinger Band", 
-                timestamp=pd.Timestamp.now().timestamp(),
-                size=size
-            )
-        if signal == "SELL" and self.position != "LONG":
-            self.position = "SHORT"
-            self.entry_price = price
-            return Decision(
-                action="SELL", 
-                reason="Price above upper Bollinger Band", 
-                timestamp=pd.Timestamp.now().timestamp(),
-                size=size
-            )
+        if signal == "BUY":
+            if self.position == "LONG":
+                return Decision(
+                    action="HOLD",
+                    reason="No trade signal",
+                    timestamp=pd.Timestamp.now().timestamp(),
+                    size=0.0
+                )
+
+            if self.position != "SHORT":
+                self.position = "LONG"
+                self.entry_price = price
+                return Decision(
+                    action="BUY",
+                    reason="Price below lower Bollinger Band",
+                    timestamp=pd.Timestamp.now().timestamp(),
+                    size=size
+                )
+            
+        if signal == "SELL":
+            if self.position == "SHORT":
+                return Decision(
+                    action="HOLD",
+                    reason="No trade signal",
+                    timestamp=pd.Timestamp.now().timestamp(),
+                    size=0.0
+                )
+
+            if self.position != "LONG":
+                self.position = "SHORT"
+                self.entry_price = price
+                return Decision(
+                    action="SELL",
+                    reason="Price above upper Bollinger Band",
+                    timestamp=pd.Timestamp.now().timestamp(),
+                    size=size
+                )
+
         return Decision(
             action="HOLD", 
             reason="No trade signal", 
