@@ -1,3 +1,9 @@
+"""
+
+This file tests the strategy in mean_reversion.py
+
+"""
+
 from ..strategy.mean_reversion import MeanReversionStrategy
 
 def test_buy_signal_when_price_below_lower_band():
@@ -101,11 +107,9 @@ def test_position_updates_on_sell():
 def test_no_duplicate_buy_when_already_long():
     strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
 
-    # First BUY
     strategy.decision(price=90, sma=100, lower_band=95, upper_band=105, volatility=10)
     assert strategy.position == "LONG"
 
-    # Second BUY attempt
     decision = strategy.decision(price=80, sma=100, lower_band=95, upper_band=105, volatility=10)
 
     assert decision.action == "HOLD"
@@ -115,11 +119,9 @@ def test_no_duplicate_buy_when_already_long():
 def test_no_duplicate_sell_when_already_short():
     strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
 
-    # First SELL
     strategy.decision(price=120, sma=100, lower_band=95, upper_band=105, volatility=10)
     assert strategy.position == "SHORT"
 
-    # Second SELL attempt
     decision = strategy.decision(price=130, sma=100, lower_band=95, upper_band=105, volatility=10)
 
     assert decision.action == "HOLD"
