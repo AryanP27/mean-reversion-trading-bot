@@ -56,8 +56,7 @@ def test_volatility_too_high():
     assert decision.action == "HOLD"
     assert decision.reason == "High volatility"
 
-
-def test_volatility_too_high():
+def test_volatility_too_low():
     strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
 
     price = 100 
@@ -70,3 +69,31 @@ def test_volatility_too_high():
 
     assert decision.action == "HOLD"
     assert decision.reason == "Low volatility"
+
+def test_position_updates_on_buy():
+    strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
+
+    price = 90
+    sma = 100
+    lower = 95
+    upper = 105
+    volatility = upper - lower  # = 10 (normal)
+
+    decision = strategy.decision(price, sma, lower, upper, volatility)
+
+    assert strategy.position == "LONG"
+    assert decision.action == "BUY"
+
+def test_position_updates_on_sell():
+    strategy = MeanReversionStrategy(low_vol=5, high_vol=50, sizing_constant=1.0)
+
+    price = 120
+    sma = 100
+    lower = 95
+    upper = 105
+    volatility = upper - lower  # = 10 (normal)
+
+    decision = strategy.decision(price, sma, lower, upper, volatility)
+
+    assert strategy.position == "SHORT"
+    assert decision.action == "SELL"
