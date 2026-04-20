@@ -57,7 +57,7 @@ class MeanReversionStrategy:
         
         size = self.sizing_constant / max(volatility, 1e-6)
 
-        if signal == "BUY" and self.position != "LONG":
+        if signal == "BUY" and self.position != "SHORT":
             self.position = "LONG"
             self.entry_price = price
             return Decision(
@@ -66,7 +66,7 @@ class MeanReversionStrategy:
                 timestamp=pd.Timestamp.now().timestamp(),
                 size=size
             )
-        if signal == "SELL" and self.position != "SHORT":
+        if signal == "SELL" and self.position != "LONG":
             self.position = "SHORT"
             self.entry_price = price
             return Decision(
